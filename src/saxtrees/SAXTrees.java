@@ -1,10 +1,8 @@
-
 package saxtrees;
 
+import management.SAXHandler;
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -21,20 +19,20 @@ public class SAXTrees {
         boolean exit = false;
         int menuOption;
 
-        // Read XML file
-        SAXFile();
+        try {
+            // Read XML file
+            SAXFile();
 
-        while (!exit) {
-            System.out.println(
-                    "\n*** Treeses ***\n"
-                    + "1 - Show XML structure\n"
-                    + "2 - Count trees\n"
-                    + "3 - Check fully registered trees\n"
-                    + "4 - Check trees by attribute\n"
-                    + "0 - Exit"
-            );
+            while (!exit) {
+                System.out.println(
+                        "\n*** Treeses ***\n"
+                        + "1 - Show XML structure\n"
+                        + "2 - Count trees\n"
+                        + "3 - Check fully registered trees\n"
+                        + "4 - Check trees by attribute\n"
+                        + "0 - Exit"
+                );
 
-            try {
                 menuOption = Reader.nextInt(4);
                 switch (menuOption) {
                     case 1: // SHOW STRUCTURE
@@ -51,20 +49,20 @@ public class SAXTrees {
                         break;
                     default:
                 }
-            } catch (IOException e) {
-                System.out.println(e.getMessage());
             }
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
         }
     }
 
-    static void SAXFile() {
+    static void SAXFile() throws IOException {
         try {
             SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
             sh = new SAXHandler();
 
             parser.parse(new File(PERSISTENCE), sh);
         } catch (ParserConfigurationException | SAXException | IOException ex) {
-            Logger.getLogger(SAXTrees.class.getName()).log(Level.SEVERE, null, ex);
+            throw new IOException("There was an error when accessing the program data");
         }
     }
 
