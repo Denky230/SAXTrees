@@ -39,10 +39,11 @@ public class SAXTrees {
                         showStructure();
                         break;
                     case 2: // COUNT TREES
+                        System.out.println(sh.countTrees());
                         break;
                     case 3: // CHECK FULLY REGISTERED TREES
                         break;
-                    case 4: // CHECK TREES BY ATTR
+                    case 4: // CHECK TREES BY PROPERTY
                         break;
                     case 0: // EXIT
                         exit = true;
