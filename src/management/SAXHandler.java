@@ -9,25 +9,29 @@ import org.xml.sax.helpers.DefaultHandler;
 
 public class SAXHandler extends DefaultHandler {
 
-    private ArrayList<Tree> trees;
-    private int numTrees;
     private Tree currTree;
+    private int numTotalTrees;
+    private ArrayList<Tree> fullyRegisteredTrees;
 
-    private String element_grp;
     private String element;
-    private ArrayList<String> properties;
+    private String element_grp;
     private String currProperty;
+    private String filterProperty;
+    private ArrayList<String> properties;
+    private ArrayList<String> filterPropertyOptions;
 
     private String lastEvent;
     private IndentLevels indentLevel;
 
-    public SAXHandler() {
-        trees = new ArrayList<>();
-        numTrees = 0;
+    public SAXHandler(String filterProperty) {
+        fullyRegisteredTrees = new ArrayList<>();
+        numTotalTrees = 0;
 
-        element_grp = "";
-        element = "";
+//        element_grp = "";
+//        element = "";
         properties = new ArrayList<>();
+        filterPropertyOptions = new ArrayList<>();
+        this.filterProperty = filterProperty;
         currProperty = "";
 
         lastEvent = "";
@@ -36,7 +40,6 @@ public class SAXHandler extends DefaultHandler {
 
     @Override
     public void startDocument() throws SAXException {
-        System.out.println("start doc");
         indentLevel = IndentLevels.ELEMENT_GROUP;
     }
 
@@ -44,7 +47,86 @@ public class SAXHandler extends DefaultHandler {
     public void characters(char[] ch, int start, int length) throws SAXException {
         String chars = new String(ch);
         String content = chars.substring(start, start + length);
+        content = content.trim();   // Get rid of blank spaces, tabs, etc.
+        
+        if (!content.equals("")) {
+            setProperty(content);
+            
+            if (currProperty.equals(filterProperty) && !filterPropertyOptions.contains(content)) {
+                filterPropertyOptions.add(content);
+            }
+        }
+            
 
+        currProperty = "";
+    }
+
+    @Override
+    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+        if (lastEvent.equals("start")) {
+            indentLevel = IndentLevels.values()[indentLevel.ordinal() + 1];
+        }
+        
+        switch (indentLevel) {
+
+            case ELEMENT_GROUP:
+                break;
+
+            case ELEMENT:
+                // Initialize element
+                switch (qName) {
+                    case "arbre":
+                        currTree = new Tree();
+                        numTotalTrees++;
+                        break;
+                }
+                break;
+
+            case PROPERTY:
+                // Save current property name
+                currProperty = qName;
+
+                // Store every non-stored property for later display
+                if (!properties.contains(currProperty)) {
+                    properties.add(currProperty);
+                }
+                break;
+        }
+
+        lastEvent = "start";
+    }
+
+    @Override
+    public void endElement(String uri, String localName, String qName) throws SAXException {
+        if (lastEvent.equals("end")) {
+            indentLevel = IndentLevels.values()[indentLevel.ordinal() - 1];
+        }
+
+        switch (indentLevel) {
+            case ELEMENT:
+                if (isTreeFullyRegistered(currTree))
+                    fullyRegisteredTrees.add(currTree);
+                break;
+        }
+        
+        lastEvent = "end";
+    }
+
+    private boolean isPropertyStored(String attribute) {
+        for (String attr : properties) {
+            if (attr.equals(attribute))
+                return true;
+        }
+
+        return false;
+    }
+
+    public ArrayList<String> getStructure() { return properties; }
+    public ArrayList<String> getFilterPropertyOptions() { return filterPropertyOptions; }
+    public int countTrees() { return numTotalTrees; }
+    public ArrayList<Tree> getFullyRegisteredTrees() { return fullyRegisteredTrees; }
+    
+    void setProperty(String content) {
         switch (currProperty) {
             case "codi":
                 currTree.setCode(content);
@@ -116,76 +198,9 @@ public class SAXHandler extends DefaultHandler {
                 currTree.setTreeHoleVora(content);
                 break;
         }
-
-        currProperty = "";
     }
-
-    @Override
-    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-        System.out.print("start - " + qName + " - ");
-
-        if (lastEvent.equals("start")) {
-            indentLevel = IndentLevels.values()[indentLevel.ordinal() + 1];
-        }
-
-        switch (indentLevel) {
-
-            case ELEMENT_GROUP:
-                // Save current element group name
-                element_grp = qName;
-                break;
-
-            case ELEMENT:
-                // Initialize element
-                switch (qName) {
-                    case "arbre":
-                        currTree = new Tree();
-                        numTrees++;
-                        break;
-                }
-                break;
-
-            case PROPERTY:
-                // Save current property name
-                currProperty = qName;
-
-                // Store every non-stored property for later display
-                if (!isPropertyStored(qName)) {
-                    properties.add(qName);
-                }
-                break;
-        }
-
-        lastEvent = "start";
-        System.out.println(indentLevel.name());
+    boolean isTreeFullyRegistered(Tree tree) {
+        String treeString = tree.toString();
+        return !treeString.contains("null");
     }
-
-    @Override
-    public void endElement(String uri, String localName, String qName) throws SAXException {
-        System.out.print("end - ");
-
-        switch (indentLevel) {
-            case ELEMENT:
-                trees.add(currTree);
-                break;
-        }
-
-        if (lastEvent.equals("end")) {
-            indentLevel = IndentLevels.values()[indentLevel.ordinal() - 1];
-        }
-        lastEvent = "end";
-        System.out.println(indentLevel.name() + "\n");
-    }
-
-    private boolean isPropertyStored(String attribute) {
-        for (String attr : properties) {
-            if (attr.equals(attribute))
-                return true;
-        }
-
-        return false;
-    }
-
-    public ArrayList<String> getStructure() { return this.properties; }
-    public int countTrees() { return this.trees.size(); }
 }

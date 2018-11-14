@@ -27,6 +27,100 @@ public class Tree {
     private String treeHoleSize;
     private String treeHoleVora;
 
+    public String getCode() {
+        return code;
+    }
+
+    public Double getPosX() {
+        return posX;
+    }
+
+    public Double getPosY() {
+        return posY;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public String getElementType() {
+        return elementType;
+    }
+
+    public String getGreenSpace() {
+        return greenSpace;
+    }
+
+    public String getDirection() {
+        return direction;
+    }
+
+    public String getHeight() {
+        return height;
+    }
+
+    public int getSpecieCategoryID() {
+        return specieCategoryID;
+    }
+
+    public String getCientificName() {
+        return cientificName;
+    }
+
+    public String getNameES() {
+        return nameES;
+    }
+
+    public String getNameCAT() {
+        return nameCAT;
+    }
+
+    public String getTreeCategory() {
+        return treeCategory;
+    }
+
+    public String getVoreraWidth() {
+        return voreraWidth;
+    }
+
+    public String getPlantacioDT() {
+        return plantacioDT;
+    }
+
+    public String getWaterType() {
+        return waterType;
+    }
+
+    public String getTipReg() {
+        return tipReg;
+    }
+
+    public String getSurfaceType() {
+        return surfaceType;
+    }
+
+    public String getSupportType() {
+        return supportType;
+    }
+
+    public String getTreeHoleCover() {
+        return treeHoleCover;
+    }
+
+    public String getTreeHoleSize() {
+        return treeHoleSize;
+    }
+
+    public String getTreeHoleVora() {
+        return treeHoleVora;
+    }
+
+
+    
     public void setCode(String code) { this.code = code; }
     public void setPosX(Double posX) { this.posX = posX; }
     public void setPosY(Double posY) { this.posY = posY; }
@@ -50,4 +144,9 @@ public class Tree {
     public void setTreeHoleCover(String treeHoleCover) { this.treeHoleCover = treeHoleCover; }
     public void setTreeHoleSize(String treeHoleSize) { this.treeHoleSize = treeHoleSize; }
     public void setTreeHoleVora(String treeHoleVora) { this.treeHoleVora = treeHoleVora; }
+
+    @Override
+    public String toString() {
+        return code + " - " + posX + " - " + posY + " - " + latitude + " - " + longitude + " - " + elementType + " - " + greenSpace + " - " + direction + " - " + height + " - " + specieCategoryID + " - " + cientificName + " - " + nameES + " - " + nameCAT + " - " + treeCategory + " - " + voreraWidth + " - " + plantacioDT + " - " + waterType + " - " + tipReg + " - " + surfaceType + " - " + supportType + " - " + treeHoleCover + " - " + treeHoleSize + " - " + treeHoleVora;
+    }
 }
